@@ -1,11 +1,23 @@
+import { useState } from 'react';
+import Badge from './badge';
+
 function MemberCard({ firstName, lastName, tech, message }) {
+  const [isInverted, setIsInverted] = useState(false);
+
+  const handleClick = () => {
+    setIsInverted(!isInverted);
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition-shadow duration-300">
-      <h2 className="text-xl font-semibold text-gray-800 mb-1">
+    <div
+      onClick={handleClick}
+      className="bg-white rounded-xl shadow-md p-4 cursor-pointer hover:shadow-lg transition"
+    >
+      <h3 className="text-xl font-bold mb-1">
         {firstName} {lastName}
-      </h2>
-      <p className="text-sm text-blue-600 font-medium mb-2">{tech}</p>
-      <p className="text-gray-600 text-sm">{message}</p>
+      </h3>
+      <Badge isInverted={isInverted}>{tech}</Badge>
+      <p className="mt-2 text-gray-600">{message}</p>
     </div>
   );
 }

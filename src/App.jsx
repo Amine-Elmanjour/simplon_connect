@@ -1,23 +1,51 @@
-import './App.css';
-import MemberCard from './components/MemberCard';
-import { members } from './members';
+import { useState, useEffect } from "react";
+import MemberCard from "./components/MemberCard";
+import MemberForm from "./components/MemberForm";
+import { members as initialMembers } from "./members";
 
 function App() {
+  const [members, setMembers] = useState(() => {
+    const saved = localStorage.getItem("members");
+    return saved ? JSON.parse(saved) : initialMembers;
+  });
+
+  const addMember = (newMember) => {
+    setMembers([...members, newMember]);
+  };
+
+  useEffect(() => {
+    localStorage.setItem("members", JSON.stringify(members));
+  }, [members]);
+
+  const [search, setSearch] = useState("");
+
   return (
-    <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 min-h-screen">
-      <h1 className="text-4xl font-extrabold mb-8 text-center text-blue-700 drop-shadow-md">
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">
         Annuaire de la promo
       </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {members.map((member, index) => (
-          <MemberCard
-            key={index}
-            firstName={member.firstName}
-            lastName={member.lastName}
-            tech={member.tech}
-            message={member.message}
-          />
-        ))}
+
+      <MemberForm onAddMember={addMember} />
+      <div className="flex justify-center mb-6 mt-16">
+        <input
+          type="text"
+          placeholder="Rechercher un membre..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {members
+          .filter((member) =>
+            `${member.firstName} ${member.lastName} ${member.tech}`
+              .toLowerCase()
+              .includes(search.toLowerCase())
+          )
+          .map((member, index) => (
+            <MemberCard key={index} {...member} />
+          ))}
       </div>
     </div>
   );
